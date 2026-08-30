@@ -11,5 +11,3 @@ chroma_data/
 docs/
 DATA/
 CLAUDE.md
-uv.lock
-.gitignore
