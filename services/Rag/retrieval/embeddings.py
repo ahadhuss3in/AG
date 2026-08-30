@@ -66,8 +66,7 @@ def embedding_batch(batch:list[str]) -> list[list[float]]:
                 if rate_limited_check and r!=4:
                     sleep = 2**r
                     logfire.warning(
-                        f"Gemini is getting rate limited:"
-                        f"Retrying in {sleep} seconds "
+                        f"Gemini is getting rate limited:Retrying in {sleep} seconds "
                         f"Attempts left {r+1}/5."
                     )
                 else :
