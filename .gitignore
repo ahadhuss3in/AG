@@ -10,6 +10,6 @@ chroma_data/
 .kilo/
 docs/
 DATA/
-CLAUDE.md/
+CLAUDE.md
 uv.lock
 .gitignore
