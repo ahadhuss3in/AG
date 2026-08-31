@@ -24,7 +24,7 @@ def _format_table(rows: list[list[str | None]]) -> str:
     return "\n".join(lines)
 
 
-def load(file_path: str | Path) -> LoadedDocument:
+def loadpdf(file_path: str | Path) -> LoadedDocument:
     """Read a pdf file page by page and pull out its text and tables.
 
     If a page has no text at all, we still keep going, but we leave a

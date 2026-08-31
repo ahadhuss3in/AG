@@ -13,7 +13,7 @@ from bs4 import UnicodeDammit
 from . import LoadedDocument, check_file_size, warn_if_empty
 
 
-def load(file_path: str | Path) -> LoadedDocument:
+def loadtext(file_path: str | Path) -> LoadedDocument:
     """Open a text file and read whatever is inside it."""
     file_path = Path(file_path)
 

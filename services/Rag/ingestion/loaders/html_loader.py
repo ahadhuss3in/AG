@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup, UnicodeDammit
 from . import LoadedDocument, check_file_size, warn_if_empty
 
 
-def load(file_path: str | Path) -> LoadedDocument:
+def loadhtml(file_path: str | Path) -> LoadedDocument:
     """Reads an html file and pull out the readable content."""
     file_path = Path(file_path)
 

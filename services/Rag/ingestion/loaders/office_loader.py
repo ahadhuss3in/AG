@@ -98,7 +98,7 @@ _HANDLERS = {
 }
 
 
-def load(file_path: str | Path) -> LoadedDocument:
+def loadoffice(file_path: str | Path) -> LoadedDocument:
     """Read a .docx or .pptx file into a LoadedDocument.
 
     Raises a clear error for any other file ending, since this loader only
