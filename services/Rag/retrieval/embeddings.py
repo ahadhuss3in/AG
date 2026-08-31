@@ -85,7 +85,19 @@ def embedding_batch(batch:list[str]) -> list[list[float]]:
 
 def embedding_query(query:str) -> list[float]:
     """embedded query to compare"""
-    return 
+
+    _init()
+    if _model_type =="gemini":
+        ## embded the query using gemini
+        return _active_model.embed_query(query)
+    ## or using sentence transformer
+    return _active_model.encode([query])[0].tolist()
 
 def embedded_texts(texts:list[str])-> list[list[float]]: 
     _init()
+    all_embeddings: list[list[float]] = []
+    for i in range(0,len(texts), BATCH_SIZE):
+        batch = texts[i : i + BATCH_SIZE]
+        with logfire.span("Embedded Batch", model=_model_type, start = i, size=len(batch)):
+            all_embeddings.extend(embedding_batch(batch))
+    return all_embeddings
