@@ -74,6 +74,7 @@ def embedding_batch(batch:list[str]) -> list[list[float]]:
                     raise 
         raise RuntimeError("Gemini embedding failed after 5 exponential retries.")
     else:
+        ## fallback sentence trasnformer encoding ( embedding )
         return _active_model.encode(batch, show_progress_bar=False).tolist()
 
 
