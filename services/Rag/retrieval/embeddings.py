@@ -69,6 +69,7 @@ def embedding_batch(batch:list[str]) -> list[list[float]]:
                         f"Gemini is getting rate limited:Retrying in {sleep} seconds "
                         f"Attempts left {r+1}/5."
                     )
+                    time.sleep(sleep)
                 else :
                     logfire.error(f"Gemini Embedding failed:{e}")
                     raise 
