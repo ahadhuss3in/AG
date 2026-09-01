@@ -10,4 +10,5 @@ chroma_data/
 .kilo/
 docs/
 DATA/
+ProcessedData/
 CLAUDE.md

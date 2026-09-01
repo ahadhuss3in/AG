@@ -8,7 +8,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
 from app.config import config
-from services.Rag.retrieval.embeddings import embedded_texts, get_embedding_dim
+from services.Rag.retrieval.embeddings import embedded_texts, get_embedding_dim, get_safe_chunk_size
 from services.Rag.ingestion.loaders.pdf_loader import loadpdf
 from services.Rag.ingestion.loaders.html_loader import loadhtml
 from services.Rag.ingestion.loaders.office_loader import loadoffice
@@ -28,7 +28,7 @@ q_cliient = QdrantClient(
 def saved_prog_local(data:dict, sourcetype:str, filename:str) -> str:
     """save the parsed chunk locall"""
     folder = os.path.join(PROCESSED_DATA_DIR, sourcetype)
-    os.makeidrs(folder,exist_ok=True)
+    os.makedirs(folder,exist_ok=True)
     dest= os.path.join(folder, f"{filename}.json")
     with open(dest, "w", encoding="utf-8") as f:
         json.dump(data,f,ensure_ascii=False, indent=2)
@@ -54,13 +54,15 @@ def process_file(file_path:str, filename:str, sourcetype:str):
                     ext=ext,
                 )
                 return
-            if not doc or not doc.strip():
+            if not doc or not doc.text.strip():
                 logfire.warning(f"File {filename} has no extractable content, skipping it.")
                 return
 
-            
-            ## chunk the text now 
-            chunks=chunk_text(doc)
+
+            ## chunk the text now, sized for whichever embedding provider
+            ## is actually active, so openrouter's stricter token limit
+            ## doesn't need to rely on truncating chunks after the fact
+            chunks=chunk_text(doc.text, chunk_size=get_safe_chunk_size())
             if not chunks:
                 return
             
@@ -163,3 +165,16 @@ def run_all_ingestion(base_dir:str, explicit_source_type:str = None, wipe:bool=F
     else:
         for sub in subdirs:
             process_dir(os.path.join(base_dir, sub), sub)
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    wipe = "--wipe" in args
+    # only look at args that aren't the --wipe flag itself, so "--wipe" on
+    # its own doesn't get mistaken for the target directory.
+    positional_args = [a for a in args if a != "--wipe"]
+    target_dir = positional_args[0] if positional_args else "DATA/rag"
+
+    logfire.info(f"starting ingestion run, target_dir={target_dir}, wipe={wipe}")
+    run_all_ingestion(target_dir, wipe=wipe)
+    logfire.info("ingestion run finished")
