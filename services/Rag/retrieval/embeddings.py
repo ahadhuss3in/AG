@@ -50,7 +50,7 @@ def _call_custom_embeddings(texts: list[str]) -> list[list[float]]:
             safe_texts.append(text[:max_chars])
         else:
             safe_texts.append(text)
-
+        ##using jina AI for the base for embedding model ( free 1 M token)
     base_url = config.CUSTOM_EMBEDDING_BASE_URL.rstrip("/")
     response = requests.post(
         f"{base_url}/embeddings",
