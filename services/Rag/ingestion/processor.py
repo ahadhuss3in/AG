@@ -138,9 +138,7 @@ def run_all_ingestion(base_dir:str, explicit_source_type:str = None, wipe:bool=F
                         f"({dim}-dim, Cosine Comparison method)"
                     )
 
-    # this runs every time, not just when the collection was just created,
-    # otherwise a second run against an already existing collection would
-    # skip straight past scanning and never process a single file.
+    # this runs every time, not just when the collection was just created
     subdirs=[
         d for d in os.listdir(base_dir)
         if os.path.isdir(os.path.join(base_dir,d))
