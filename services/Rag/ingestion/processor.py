@@ -103,7 +103,7 @@ def process_file(file_path:str, filename:str, sourcetype:str):
                 f"failed to process this file{filename}:{e}"
             )
         
-
+## found dir and paths -> scan for files in these dir and folders
 def process_dir(dir_path:str, sourcetype:str):
     """Process every file inside one directory, under one sourcetype."""
     with logfire.span("Scanning directory",path=dir_path,sourcetype=sourcetype):
@@ -115,6 +115,7 @@ def process_dir(dir_path:str, sourcetype:str):
             process_file(file_path, filename, sourcetype)
 
 
+## find the folder paths and dir paths
 def run_all_ingestion(base_dir:str, explicit_source_type:str = None, wipe:bool=False):
     """
     scane the dir, map sub folder to source rypes and ingest all avail documents.
