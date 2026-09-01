@@ -82,13 +82,17 @@ def process_file(file_path:str, filename:str, sourcetype:str):
                             "text":chunk,
                             "source":filename,
                             "sourcetype":sourcetype,
-
+                            ## fixing a bug,to get more context about the pulled chunk
+                            ## if the context doesnt exist using this index we can pull the before
+                            ## or next index
+                            "chunk_index": i,
+                            "chunk_count": len(chunks),
                         },
                     )
 
                     #using zip to pair up the chunk and vector to each other chunks[1]->embeddigs[1]
-                    for chunk,vector in zip(chunks,embeddings)
-                        
+                    for i, (chunk,vector) in enumerate(zip(chunks,embeddings))
+
                 ]
 
                 q_cliient.upsert(
