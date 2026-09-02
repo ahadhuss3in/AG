@@ -19,3 +19,6 @@ pdfplumber
 
 logfire[fastapi,requests]
 loguru
+
+
+langchain-groq

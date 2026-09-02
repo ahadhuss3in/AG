@@ -1,0 +1,73 @@
+from services.Rag.agent.StateGraph.RagState import AgentState
+from app.config import config
+from langchain_groq import ChatGroq
+import logfire
+
+
+llm = ChatGroq(api_key=config.GROQ_API_KEY, model=config.MODEL_REASONING)
+
+
+def generate_node(state:AgentState):
+    """
+    Generate a reponse to the actual query using 
+    the document and the conversational history
+    """
+    query = state["query"]
+    history=""
+## import the history of messages 
+    for msg in state["messages"][:-1]:
+            ## determine what is the type of the  message to check if its user or Assistan
+            role  = "User" if msg["role"] == "user" else "Assistant"
+            history += f"{role}:{msg['content']}\n"
+
+    user_message = state["messages"][-1]["content"] if state["messages"] else ""
+
+    if query == "CONVERSATIONAL":
+        logfire.info("Generating conversational response using memory.")
+        prompt = f"""
+        You are a friendly and helpful Enterprise AI Assistant.
+        Answer the user's latest message using the CONVERSATION HISTORY below.
+
+        CONVERSATION HISTORY:
+        {history}
+
+        LATEST MESSAGE:
+        "{user_message}"
+        """
+    else:
+        logfire.info("Generating technical RAG response.")
+        max_context_chars = 25000
+        full_context = ""
+
+        for doc in state["citation"]:
+            if len(full_context) + len(doc) < max_context_chars:
+                full_context += doc + "\n\n"
+            else:
+                logfire.warning("Context truncated to fit Groq TPM limits.")
+                break
+
+        prompt = f"""
+        You are a Senior Technical Architect.
+        Answer the question using the TECHNICAL CONTEXT provided.
+
+        TECHNICAL CONTEXT:
+        {full_context}
+
+        CONVERSATION HISTORY:
+        {history}
+
+        USER QUESTION:
+        "{user_message}"
+        """
+    with logfire.spa("LLm run for reponse"):
+         try:
+              content = llm.invoke(prompt).content
+              logfire.info("Response systhesized via LLM")
+              return {
+                    "final_ans":content,
+                    "status":"Response Generated",
+                    "plan":state["plan"],
+                    "messages":[{"role":"assistant", "content":content}]
+              }
+         except Exception as e:
+              logfire.error(f"LLm gen failed :{e}")
