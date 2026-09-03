@@ -22,3 +22,5 @@ loguru
 
 
 langchain-groq
+
+flashrank
