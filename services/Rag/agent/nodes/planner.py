@@ -13,11 +13,13 @@ def planned_node(state: AgentState):
     ## import the history of messages 
     history = ""
     for msg in state["messages"][:-1]:
-        ## determine what is the type of the  message to check if its user or Assistan
-        role  = "User" if msg["role"] == "user" else "Assistant"
-        history += f"{role}:{msg['content']}\n"
-    
-    user_message = state["messages"][-1]["content"] if state["messages"] else ""
+        ## add_messages turns every message into a real HumanMessage/
+        ## AIMessage object, not a dict, so this needs attribute access
+        ## (.type/.content), not ["role"]/["content"]
+        role  = "User" if msg.type == "human" else "Assistant"
+        history += f"{role}:{msg.content}\n"
+
+    user_message = state["messages"][-1].content if state["messages"] else ""
     
     prompt = f"""
     You are an intelligent Assistant Planner. 

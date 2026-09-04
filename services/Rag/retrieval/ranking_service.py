@@ -25,7 +25,7 @@ def get_ranker() -> Ranker:
 def rerank_documents(query:str, documents:list[str],top_n: int = 5) -> list[str]:
     """
     Re-ranking documnets using a crossencoder
-    using a cross encoder since thiis is slow but produces accurate self attention / semantic 
+    using a cross encoder since thiis is slow but produces accurate self attention / semantic
     relation between query
     flashrank uses the OnNx model quantized way locally
     """
@@ -48,7 +48,7 @@ def rerank_documents(query:str, documents:list[str],top_n: int = 5) -> list[str]
         ## turn everything into a request obj ysing ReRankRequest
         request = RerankRequest(query=query, passages=passages)
 
-        ##get the results 
+        ##get the results
         results= ranker.rerank(request)
 
         reranked_docs = []

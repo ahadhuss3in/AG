@@ -16,11 +16,13 @@ def generate_node(state:AgentState):
     history=""
 ## import the history of messages 
     for msg in state["messages"][:-1]:
-            ## determine what is the type of the  message to check if its user or Assistan
-            role  = "User" if msg["role"] == "user" else "Assistant"
-            history += f"{role}:{msg['content']}\n"
+            ## add_messages turns every message into a real HumanMessage/
+            ## AIMessage object, not a dict, so this needs attribute access
+            ## (.type/.content), not ["role"]/["content"]
+            role  = "User" if msg.type == "human" else "Assistant"
+            history += f"{role}:{msg.content}\n"
 
-    user_message = state["messages"][-1]["content"] if state["messages"] else ""
+    user_message = state["messages"][-1].content if state["messages"] else ""
 
     if query == "CONVERSATIONAL":
         logfire.info("Generating conversational response using memory.")
@@ -59,7 +61,7 @@ def generate_node(state:AgentState):
         USER QUESTION:
         "{user_message}"
         """
-    with logfire.spa("LLm run for reponse"):
+    with logfire.span("LLm run for reponse"):
          try:
               content = llm.invoke(prompt).content
               logfire.info("Response systhesized via LLM")

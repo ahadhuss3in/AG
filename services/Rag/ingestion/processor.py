@@ -8,7 +8,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 
 from app.config import config
-from services.Rag.retrieval.embeddings import embedded_texts, get_embedding_dim, get_safe_chunk_size
+from services.Rag.embedding.embeddings import embedded_texts, get_embedding_dim, get_safe_chunk_size
 from services.Rag.ingestion.loaders.pdf_loader import loadpdf
 from services.Rag.ingestion.loaders.html_loader import loadhtml
 from services.Rag.ingestion.loaders.office_loader import loadoffice
