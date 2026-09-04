@@ -36,6 +36,10 @@ def generate_node(state:AgentState):
         LATEST MESSAGE:
         "{user_message}"
         """
+        # no retrieval happened this turn, so no sources actually back
+        # this answer, wipe out whatever citation was left over from a
+        # previous technical turn instead of leaving it sitting there
+        citation_for_response = []
     else:
         logfire.info("Generating technical RAG response.")
         max_context_chars = 25000
@@ -61,6 +65,8 @@ def generate_node(state:AgentState):
         USER QUESTION:
         "{user_message}"
         """
+        # this turn's own retrieval really was used to answer
+        citation_for_response = state["citation"]
     with logfire.span("LLm run for reponse"):
          try:
               content = llm.invoke(prompt).content
@@ -69,6 +75,7 @@ def generate_node(state:AgentState):
                     "final_ans":content,
                     "status":"Response Generated",
                     "plan":state["plan"],
+                    "citation":citation_for_response,
                     "messages":[{"role":"assistant", "content":content}]
               }
          except Exception as e:
